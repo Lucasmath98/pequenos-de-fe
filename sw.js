@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pequenosdefe-v6';
+const CACHE_NAME = 'pequenosdefe-v7';
 const FILES = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', (e) => {
