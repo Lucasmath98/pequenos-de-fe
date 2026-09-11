@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>Pequeños de Fe</title>
+<meta name="theme-color" content="#12081F">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#12081F; --bg-elevated:#1B0F2E; --surface:#241640; --card:#1B0F2E;
+    --text:#FBF6FF; --text-soft:#CBB8E8; --text-dim:#8A76A8;
+    --pink:#FF5FA2; --gold:#FFC857; --purple:#8B5CF6; --track:#332154;
+    --app-w:430px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{ background:#0A0515; color:var(--text); font-family:'Public Sans',sans-serif; -webkit-font-smoothing:antialiased; display:flex; justify-content:center; }
+  h1,h2,h3{ font-family:'Baloo 2',sans-serif; font-weight:700; margin:0; }
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;cursor:pointer;}
+
+  .app{ width:100%; max-width:var(--app-w); min-height:100vh; background:var(--bg); position:relative; overflow-x:hidden; padding-bottom:30px; }
+  @media (min-width:480px){ body{ padding:24px 0; } .app{ min-height:844px; border-radius:32px; box-shadow:0 30px 70px rgba(0,0,0,0.7); overflow:hidden; } }
+
+  .topbar{ display:flex; align-items:center; justify-content:space-between; padding:16px 18px 4px; }
+  .brand{ display:flex; align-items:center; gap:8px; font-family:'Baloo 2',sans-serif; font-weight:800; font-size:18px; color:var(--gold); }
+  .brand svg{ width:24px; height:24px; }
+  .install-btn{ background:var(--surface); border:1px solid var(--track); border-radius:20px; padding:7px 13px; font-size:11.5px; font-weight:700; color:var(--gold); display:none; align-items:center; gap:5px; }
+  .install-btn.show{ display:flex; }
+
+  .hero{ margin:14px 18px 6px; border-radius:20px; overflow:hidden; position:relative; height:230px; display:flex; align-items:flex-end; background-size:cover; background-position:center; }
+  .hero-shade{ position:absolute; inset:0; background:linear-gradient(0deg, rgba(10,5,21,0.95) 10%, rgba(10,5,21,0.25) 55%, transparent 100%); }
+  .hero-inner{ padding:16px 18px 18px; width:100%; position:relative; }
+  .hero-eyebrow{ font-size:11px; color:var(--gold); font-weight:700; margin:0 0 6px; text-transform:uppercase; letter-spacing:0.03em; }
+  .hero h1{ font-size:22px; line-height:1.2; margin:0 0 10px; color:#fff; }
+  .hero-cta{ display:inline-flex; align-items:center; gap:8px; background:var(--pink); color:#fff; border:none; padding:11px 20px; border-radius:24px; font-size:14px; font-weight:700; }
+
+  .section{ margin:24px 0 0; }
+  .section-head{ display:flex; justify-content:space-between; align-items:baseline; padding:0 18px; margin-bottom:12px; }
+  .section-head h2{ font-size:16.5px; color:#fff; }
+  .section-head span{ font-size:11.5px; color:var(--text-dim); }
+
+  .track{ display:flex; gap:12px; padding:0 18px; overflow-x:auto; scrollbar-width:none; }
+  .track::-webkit-scrollbar{ display:none; }
+  .vcard{ flex:0 0 auto; width:168px; }
+  .vthumb{ width:168px; height:94px; border-radius:12px; background-size:cover; background-position:center; position:relative; overflow:hidden; border:1px solid var(--track); }
+  .vthumb .play{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(10,5,21,0.15); }
+  .vthumb .play svg{ width:34px; height:34px; filter:drop-shadow(0 2px 6px rgba(0,0,0,0.5)); }
+  .vtitle{ font-size:12.5px; font-weight:600; margin-top:8px; line-height:1.35; color:var(--text); }
+  .vsub{ font-size:10.5px; color:var(--text-dim); margin-top:2px; }
+
+  .badge-own{ position:absolute; top:6px; left:6px; background:var(--pink); color:#fff; font-size:9px; font-weight:800; padding:2px 7px; border-radius:6px; text-transform:uppercase; }
+
+  .player-overlay{ position:fixed; inset:0; background:rgba(5,2,10,0.92); z-index:100; display:none; align-items:center; justify-content:center; padding:0; }
+  .player-overlay.open{ display:flex; }
+  .player-box{ width:100%; max-width:var(--app-w); background:var(--bg-elevated); }
+  .player-frame-wrap{ position:relative; width:100%; aspect-ratio:16/9; background:#000; }
+  .player-frame-wrap iframe{ width:100%; height:100%; border:0; }
+  .player-close{ position:absolute; top:-42px; right:0; background:rgba(255,255,255,0.12); border:none; color:#fff; width:34px; height:34px; border-radius:50%; font-size:16px; }
+  .player-info{ padding:18px; }
+  .player-info h3{ font-size:16.5px; color:#fff; margin-bottom:6px; }
+  .player-info p{ font-size:12.5px; color:var(--text-soft); line-height:1.6; margin:0; }
+
+  .install-banner{ margin:20px 18px 0; background:linear-gradient(135deg, var(--purple), #5B3AA8); border-radius:16px; padding:16px; display:none; align-items:center; gap:12px; }
+  .install-banner.show{ display:flex; }
+  .install-banner .ib-text{ flex:1; font-size:12.5px; color:#fff; line-height:1.5; }
+  .install-banner button{ background:#fff; color:var(--purple); border:none; border-radius:20px; padding:9px 14px; font-size:12px; font-weight:700; white-space:nowrap; }
+
+  footer{ padding:26px 18px; font-size:10.5px; color:var(--text-dim); text-align:center; line-height:1.6; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.35-9.5-8.5C.7 8.4 3 5 6.5 5c1.9 0 3.3 1 4 2.2C11.2 6 12.6 5 14.5 5 18 5 20.3 8.4 18.5 12.5 16 16.65 12 21 12 21z" fill="#FFC857"/></svg>
+      Pequeños de Fe
+    </div>
+    <button class="install-btn" id="installBtn" onclick="triggerInstall()">⬇️ Instalar</button>
+  </div>
+
+  <div class="hero" id="heroSection" style="background-image:url('https://img.youtube.com/vi/2hQlgtb3LHU/hqdefault.jpg');" onclick="openPlayer('2hQlgtb3LHU', 'David — Historia Bíblica para Niños', 'Un joven pastor elegido por Dios. Descubre el comienzo de la historia de David, doblada en español.')">
+    <div class="hero-shade"></div>
+    <div class="hero-inner">
+      <p class="hero-eyebrow">Destacado del canal</p>
+      <h1>David — Historia Bíblica para Niños</h1>
+      <button class="hero-cta">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+        Ver ahora
+      </button>
+    </div>
+  </div>
+
+  <div class="install-banner" id="installBanner">
+    <div class="ib-text">📲 ¡Instala esta app en tu pantalla de inicio para verla como una app de verdad!</div>
+    <button onclick="triggerInstall()">Instalar</button>
+  </div>
+
+  <section class="section">
+    <div class="section-head"><h2>Tu canal</h2><span>3 vídeos</span></div>
+    <div class="track" id="ownTrack"></div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><h2>Más historias bíblicas para niños</h2><span>En español</span></div>
+    <div class="track" id="moreTrack"></div>
+  </section>
+
+  <footer>Pequeños de Fe · Vídeos reproducidos directamente desde YouTube.</footer>
+
+</div>
+
+<div class="player-overlay" id="playerOverlay" onclick="if(event.target===this) closePlayer()">
+  <div class="player-box">
+    <div class="player-frame-wrap">
+      <button class="player-close" onclick="closePlayer()">✕</button>
+      <iframe id="playerFrame" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+    <div class="player-info">
+      <h3 id="playerTitle">Título</h3>
+      <p id="playerDesc">Descripción</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const OWN_VIDEOS = [
+    { id:'2hQlgtb3LHU', title:'David — Historia Bíblica para Niños', sub:'Doblado en español', desc:'Un joven pastor elegido por Dios. Descubre el comienzo de la historia de David, doblada en español.' },
+    { id:'X-pp3dGGaJM', title:'Josué y la Batalla de Jericó', sub:'Película bíblica animada', desc:'La emocionante historia de Josué y la caída de los muros de Jericó, contada para los más pequeños.' },
+    { id:'w2ANmq86qbg', title:'Vídeo del canal', sub:'Pequeños de Fe', desc:'Un video más de nuestro canal, lleno de fe y aprendizaje para los niños.' },
+  ];
+
+  const MORE_VIDEOS = [
+    { id:'HFi56T2wU6g', title:'David', sub:'Pequeños Héroes', desc:'Historias de la Biblia para niños: la vida de David.' },
+    { id:'uzrlUz68Cno', title:'Jesús', sub:'Pequeños Héroes', desc:'Historias de la Biblia para niños: la vida de Jesús.' },
+    { id:'czGW1WkkWBo', title:'Los Libros de la Biblia', sub:'Canciones cristianas', desc:'Una canción animada para aprender los libros de la Biblia.' },
+    { id:'UVou_Dmndqc', title:'La Creación — Génesis 1', sub:'Biblia para niños', desc:'El relato de la Creación, contado de forma sencilla y visual para niños.' },
+    { id:'3K5eNa1MN7c', title:'Todo sobre la Biblia', sub:'PequeFe', desc:'Un recorrido divertido por lo esencial de la Biblia, para pequeños discípulos.' },
+    { id:'8_c_UfxSRRE', title:'Maratón de Música Gospel', sub:'+10 min con Jesús', desc:'Un maratón de canciones gospel llenas de fe y alegría para niños.' },
+  ];
+
+  function thumb(id){ return `https://img.youtube.com/vi/${id}/hqdefault.jpg`; }
+
+  function buildCard(v, isOwn){
+    const el = document.createElement('div');
+    el.className = 'vcard';
+    el.onclick = () => openPlayer(v.id, v.title, v.desc);
+    el.innerHTML = `
+      <div class="vthumb" style="background-image:url('${thumb(v.id)}');">
+        ${isOwn ? '<span class="badge-own">Tu vídeo</span>' : ''}
+        <div class="play"><svg viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="12" r="11" fill="rgba(0,0,0,0.35)"/><path d="M10 8l6 4-6 4z" fill="#fff"/></svg></div>
+      </div>
+      <div class="vtitle">${v.title}</div>
+      <div class="vsub">${v.sub}</div>
+    `;
+    return el;
+  }
+
+  const ownTrack = document.getElementById('ownTrack');
+  OWN_VIDEOS.forEach(v => ownTrack.appendChild(buildCard(v, true)));
+  const moreTrack = document.getElementById('moreTrack');
+  MORE_VIDEOS.forEach(v => moreTrack.appendChild(buildCard(v, false)));
+
+  function openPlayer(id, title, desc){
+    document.getElementById('playerFrame').src = `https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
+    document.getElementById('playerTitle').textContent = title;
+    document.getElementById('playerDesc').textContent = desc;
+    document.getElementById('playerOverlay').classList.add('open');
+  }
+  function closePlayer(){
+    document.getElementById('playerOverlay').classList.remove('open');
+    document.getElementById('playerFrame').src = '';
+  }
+  document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closePlayer(); });
+
+  // ---------- INSTALAR NA TELA INICIAL (PWA) ----------
+  let deferredPrompt = null;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('installBtn').classList.add('show');
+    document.getElementById('installBanner').classList.add('show');
+  });
+  function triggerInstall(){
+    if(!deferredPrompt){
+      alert('Para instalar: toca el menú del navegador (⋮) y elige "Agregar a pantalla de inicio" o "Instalar app".');
+      return;
+    }
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => {
+      deferredPrompt = null;
+      document.getElementById('installBtn').classList.remove('show');
+      document.getElementById('installBanner').classList.remove('show');
+    });
+  }
+  window.addEventListener('appinstalled', () => {
+    document.getElementById('installBtn').classList.remove('show');
+    document.getElementById('installBanner').classList.remove('show');
+  });
+
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+  }
+</script>
+</body>
+</html>
